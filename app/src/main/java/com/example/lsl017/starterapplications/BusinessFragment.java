@@ -4,9 +4,9 @@ package com.example.lsl017.starterapplications;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,6 +28,9 @@ import java.util.Set;
  */
 public class BusinessFragment extends Fragment {
 
+    private ListView listView;
+    private ArrayAdapter adapter;
+    private List<JSONObject> finalJSONList;
 
     public BusinessFragment() {
         // Required empty public constructor
@@ -39,27 +42,21 @@ public class BusinessFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.list_view_fragment, container, false);
+        setHasOptionsMenu(true);
 
-        ListView listView = (ListView) view.findViewById(R.id.listView);
+        listView = (ListView) view.findViewById(R.id.listView);
         Bundle JSONBundle = null;
-        ArrayAdapter adapter;
 
         if (getArguments() != null) {
             JSONBundle = getArguments();
         }
 
         JSONArray jsonEntriesArray = parseJSON(JSONBundle);
-        List<JSONObject> finalJSONList = sortByState(jsonEntriesArray);
+        finalJSONList = sortByState(jsonEntriesArray);
 
         adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1);
 
-        for (int i = 0; finalJSONList.size() > i; i++) {
-            try {
-                adapter.add(finalJSONList.get(i).get("Title"));
-            } catch (org.json.JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        setFinalAdapter(adapter);
 
         listView.setAdapter(adapter);
 
@@ -97,7 +94,7 @@ public class BusinessFragment extends Fragment {
             }
         }
 
-        List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+        List<JSONObject> jsonValues = new ArrayList<>();
         for (int i = 0; i < includedJSONObjects.length(); i++) {
             try {
                 jsonValues.add(includedJSONObjects.getJSONObject(i));
@@ -134,5 +131,27 @@ public class BusinessFragment extends Fragment {
         return jsonValues;//Something
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.share_screen:
+                View view = getView();
+                listView = (ListView) view.findViewById(R.id.listView);
+                adapter = new ArrayAdapter(getActivity().getBaseContext(), R.layout.abc_list_menu_item_checkbox);
+                setFinalAdapter(adapter);
+                listView.setAdapter(adapter);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    public void setFinalAdapter(ArrayAdapter adapter){
+        for (int i = 0; finalJSONList.size() > i; i++) {
+            try {
+                adapter.add(finalJSONList.get(i).get("Title"));
+            } catch (org.json.JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

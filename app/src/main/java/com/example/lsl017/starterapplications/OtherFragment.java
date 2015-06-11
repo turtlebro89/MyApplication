@@ -6,10 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +21,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 
 /**
@@ -27,6 +28,9 @@ import java.util.TreeSet;
  */
 public class OtherFragment extends Fragment {
 
+    private ListView listView;
+    private ArrayAdapter adapter;
+    private List<JSONObject> finalJSONList;
 
     public OtherFragment() {
         // Required empty public constructor
@@ -38,10 +42,10 @@ public class OtherFragment extends Fragment {
                              Bundle savedInstanceState) {
         //Inflate the view
         View view = inflater.inflate(R.layout.list_view_fragment, container, false);
-
-        ListView listView = (ListView) view.findViewById(R.id.listView);
+        setHasOptionsMenu(true);
+        listView = (ListView) view.findViewById(R.id.listView);
         Bundle JSONBundle = null;
-        ArrayAdapter adapter;
+
 
         //loading the JSONArray
         if (getArguments() != null) {
@@ -49,18 +53,12 @@ public class OtherFragment extends Fragment {
         }
 
         JSONArray jsonEntriesArray = parseJSON(JSONBundle);
-        List<JSONObject> finalJSONList = sortByState(jsonEntriesArray);
+        finalJSONList = sortByState(jsonEntriesArray);
 
         adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1);
 
         //Load the titles of the PDF's to the array adapter
-        for (int i = 0; finalJSONList.size() > i; i++) {
-            try {
-                adapter.add(finalJSONList.get(i).get("Title"));
-            } catch (org.json.JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        setFinalAdapter(adapter);
         //load the listView
         listView.setAdapter(adapter);
 
@@ -119,7 +117,7 @@ public class OtherFragment extends Fragment {
                 try {
                     valA = (String) a.get("Title");
                     valB = (String) b.get("Title");
-                } catch (org.json.JSONException e){
+                } catch (org.json.JSONException e) {
                     System.out.println("error in sort by state");
                 }
 
@@ -136,5 +134,28 @@ public class OtherFragment extends Fragment {
         return jsonValues;//Something
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.share_screen:
+                View view = getView();
+                listView = (ListView) view.findViewById(R.id.listView);
+                adapter = new ArrayAdapter(getActivity().getBaseContext(), R.layout.abc_list_menu_item_checkbox);
+                setFinalAdapter(adapter);
+                listView.setAdapter(adapter);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void setFinalAdapter(ArrayAdapter adapter){
+        for (int i = 0; finalJSONList.size() > i; i++) {
+            try {
+                adapter.add(finalJSONList.get(i).get("Title"));
+            } catch (org.json.JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
