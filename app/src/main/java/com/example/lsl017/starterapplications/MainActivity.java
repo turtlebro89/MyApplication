@@ -45,9 +45,6 @@ public class MainActivity extends ActionBarActivity  {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Toast.makeText(getApplicationContext(), "You've selected "
-                        + getResources().getStringArray(R.array.sampleArray)[position], Toast.LENGTH_SHORT).show();
-
                 drawerLayout.closeDrawers();
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -164,8 +161,19 @@ public class MainActivity extends ActionBarActivity  {
         } else if (id == R.id.share_screen){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.content_frame, new OtherFragment());
+//            transaction.addToBackStack(null);
+//            transaction.commit();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0){
+            getSupportFragmentManager().popBackStackImmediate();
+        }else {
+            super.onBackPressed();
+        }
     }
 }
