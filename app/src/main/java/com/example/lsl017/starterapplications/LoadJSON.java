@@ -1,20 +1,15 @@
 package com.example.lsl017.starterapplications;
 
 import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import javax.net.ssl.HostnameVerifier;
+
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * Created by lsl017 on 6/5/2015.
@@ -25,15 +20,6 @@ public class LoadJSON extends AsyncTask<Void, Void, String>  {
 
     public LoadJSON(AsyncResponse asyncResponse){
         mCallback = asyncResponse;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    public interface AsyncResponse {
-        void processFinish(String JSONString);
     }
 
     public HttpsURLConnection load() {
@@ -88,5 +74,9 @@ public class LoadJSON extends AsyncTask<Void, Void, String>  {
     @Override
     protected void onPostExecute(String result){
         mCallback.processFinish(result);
+    }
+
+    public interface AsyncResponse {
+        void processFinish(String JSONString);
     }
 }
